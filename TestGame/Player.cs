@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -9,9 +10,12 @@ public class Player
 {
     private GameServiceContainer _services;
     private Position _position;
-    private float gravity = 500f;
+    private float _gravity = 500f;
     private Size _size;
     private float _speed = 250f;
+    private bool _isOnGround;
+    private float _jumpPower;
+    private float _maxJumpPower = 900f;
     
     public Player(GameServiceContainer services)
     {
@@ -22,14 +26,36 @@ public class Player
 
     public void Update(float deltaTime)
     {
-        ApplyGravity(deltaTime);
+        ApplyVerticalMove(deltaTime);
+
         Move(deltaTime);
-        ClampWithinBounds();
+        ClampWithinBounds(_position);
+        CheckIfIsOnGround(deltaTime);
     }
 
-    public void ApplyGravity(float deltaTime)
+    public void ApplyVerticalMove(float deltaTime)
     {
-        _position.Add(new Position(0, gravity * deltaTime));
+        _position.Add(new Position(0, (_gravity + _jumpPower) * deltaTime));
+        _jumpPower += _maxJumpPower * deltaTime;
+        _jumpPower = Math.Min(0, _jumpPower);
+    }
+
+    public void CheckIfIsOnGround(float deltaTime)
+    {
+        Position position1 = _position.Copy();
+        Position position2 = _position.Copy();
+        
+        position2.Add(new Position(0, _gravity * deltaTime));
+        ClampWithinBounds(position2);
+        
+        if (position1.IsSame(position2))
+        {
+            _isOnGround = true;
+        }
+        else
+        {
+            _isOnGround = false;
+        }
     }
 
     public void Move(float deltaTime)
@@ -42,6 +68,14 @@ public class Player
         {
             _position.Add(new Position(_speed * deltaTime, 0));
         }
+
+        if (Keyboard.GetState().IsKeyDown(Keys.W) || Keyboard.GetState().IsKeyDown(Keys.Space))
+        {
+            if (_isOnGround)
+            {
+                _jumpPower = -_maxJumpPower;
+            }
+        } 
     }
     
     public void Draw()
@@ -56,12 +90,12 @@ public class Player
         spriteBatch.End();
     }
 
-    public void ClampWithinBounds()
+    public void ClampWithinBounds(Position position)
     {
         Size screenSize = _services.GetService<Size>();
-        _position.SetX(Math.Max(0, _position.GetX()));
-        _position.SetX(Math.Min(screenSize.GetWidth() - _size.GetWidth(), _position.GetX()));
-        _position.SetY(Math.Max(0, _position.GetY()));
-        _position.SetY(Math.Min(screenSize.GetHeight() - _size.GetHeight(), _position.GetY()));
+        position.SetX(Math.Max(0, position.GetX()));
+        position.SetX(Math.Min(screenSize.GetWidth() - _size.GetWidth(), position.GetX()));
+        position.SetY(Math.Max(0, position.GetY()));
+        position.SetY(Math.Min(screenSize.GetHeight() - _size.GetHeight(), position.GetY()));
     }
 }

@@ -53,4 +53,14 @@ public class Position
     {
         _y = y;
     }
+
+    public Position Copy()
+    {
+        return new Position(_x, _y);
+    }
+
+    public bool IsSame(Position other)
+    {
+        return IntX() == other.IntX() && IntY() == other.IntY();
+    }
 }
