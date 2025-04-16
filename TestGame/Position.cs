@@ -43,4 +43,14 @@ public class Position
     {
         return new Vector2(_x, _y);
     }
+
+    public void SetX(float x)
+    {
+        _x = x;
+    }
+
+    public void SetY(float y)
+    {
+        _y = y;
+    }
 }

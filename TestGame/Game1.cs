@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -38,6 +39,9 @@ public class Game1 : Game
         Texture2D spriteSheet = Content.Load<Texture2D>("spritesheet");
         _services.AddService<Texture2D>(spriteSheet);
 
+        Size screenSize = new Size(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
+        _services.AddService<Size>(screenSize);
+        
         _player = new Player(_services);
         _services.AddService<Player>(_player);
 
