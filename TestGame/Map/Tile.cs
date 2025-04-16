@@ -78,8 +78,10 @@ public class Tile
 
             SpriteBatch spriteBatch = _services.GetService<SpriteBatch>();
 
+            Camera.Camera camera = _services.GetService<Camera.Camera>();
+            
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            spriteBatch.Draw(spriteSheet, _position.Copy().ToVector2(), rect, Color.White, 0f, Vector2.Zero,
+            spriteBatch.Draw(spriteSheet, _position.Copy().Add(camera.GetPosition()).ToVector2(), rect, Color.White, 0f, Vector2.Zero,
                 _size.GetWidth() / 8f, SpriteEffects.None, 0f);
             spriteBatch.End();
         }

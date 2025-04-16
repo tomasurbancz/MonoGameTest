@@ -14,7 +14,7 @@ public class Map
     {
         _services = services;
         Size screenSize = services.GetService<Size>();
-        _size = new Size(screenSize.GetWidth()/16, screenSize.GetHeight()/16);
+        _size = new Size(150, 150);
         _tiles = new Tile[_size.GetHeight(), _size.GetWidth()];
         CreateEmptyMap();
         CreatePlatform(new Position(0, _size.GetHeight() - 3), _size.GetWidth(), 3);

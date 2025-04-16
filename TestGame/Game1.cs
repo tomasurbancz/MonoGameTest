@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -11,6 +10,7 @@ public class Game1 : Game
     private GameServiceContainer _services;
     private Player _player;
     private Map.Map _map;
+    private Camera.Camera _camera;
     
     private SpriteBatch _spriteBatch;
 
@@ -49,6 +49,9 @@ public class Game1 : Game
         _map = new Map.Map(_services);
         _services.AddService<Map.Map>(_map);
 
+        _camera = new Camera.Camera(_services);
+        _services.AddService<Camera.Camera>(_camera);
+
         // TODO: use this.Content to load your game content here
     }
 
@@ -59,6 +62,7 @@ public class Game1 : Game
 
         // TODO: Add your update logic here
         _player.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
+        _camera.Update();
         
         base.Update(gameTime);
     }

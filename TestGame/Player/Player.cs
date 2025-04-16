@@ -22,7 +22,7 @@ public class Player
     public Player(GameServiceContainer services)
     {
         _services = services;
-        _position = new Position(0, 0);
+        _position = new Position(0, 2255);
         _size = new Size(64, 64);
     }
 
@@ -31,7 +31,6 @@ public class Player
         ApplyVerticalMove(deltaTime);
         Move(deltaTime);
         CheckForTileCollision(deltaTime);
-        ClampWithinBounds(_position);
     }
 
     public void CheckForTileCollision(float deltaTime)
@@ -75,17 +74,20 @@ public class Player
         
         SpriteBatch spriteBatch = _services.GetService<SpriteBatch>();
         
+        Camera.Camera camera = _services.GetService<Camera.Camera>();
+        
         spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-        spriteBatch.Draw(spriteSheet, _position.ToVector2(), rect, Color.White, 0f, Vector2.Zero, _size.GetWidth()/8f, SpriteEffects.None, 0f);
+        spriteBatch.Draw(spriteSheet, _position.Copy().Add(camera.GetPosition()).ToVector2(), rect, Color.White, 0f, Vector2.Zero, _size.GetWidth()/8f, SpriteEffects.None, 0f);
         spriteBatch.End();
     }
 
-    public void ClampWithinBounds(Position position)
+    public Position GetPosition()
     {
-        Size screenSize = _services.GetService<Size>();
-        position.SetX(Math.Max(0, position.GetX()));
-        position.SetX(Math.Min(screenSize.GetWidth() - _size.GetWidth(), position.GetX()));
-        position.SetY(Math.Max(0, position.GetY()));
-        position.SetY(Math.Min(screenSize.GetHeight() - _size.GetHeight(), position.GetY()));
+        return _position;
+    }
+
+    public Size GetSize()
+    {
+        return _size;
     }
 }
