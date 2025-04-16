@@ -4,7 +4,7 @@
   <Platform>Windows</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Users/tomas.urban/Desktop/cSharpSPSMB/src/MonoGameTest/TestGame/Content/spritesheet.png</File>
+    <File>C:/Users/tomas.urban/Desktop/MonoGameTest/TestGame/Content/spritesheet.png</File>
   </SourceFiles>
   <DestFiles>
     <File xsi:nil="true" />

@@ -50,7 +50,8 @@ public class Game1 : Game
             Exit();
 
         // TODO: Add your update logic here
-
+        _player.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
+        
         base.Update(gameTime);
     }
 
