@@ -33,10 +33,11 @@ public class Position
         return (int) _y;
     }
 
-    public void Add(Position position)
+    public Position Add(Position position)
     {
         _x += position.GetX();
         _y += position.GetY();
+        return this;
     }
 
     public Vector2 ToVector2()
@@ -62,5 +63,12 @@ public class Position
     public bool IsSame(Position other)
     {
         return IntX() == other.IntX() && IntY() == other.IntY();
+    }
+
+    public Position Multiply(int multiplier)
+    {
+        _x *= multiplier;
+        _y *= multiplier;
+        return this;
     }
 }

@@ -10,6 +10,7 @@ public class Game1 : Game
     private GraphicsDeviceManager _graphics;
     private GameServiceContainer _services;
     private Player _player;
+    private Map.Map _map;
     
     private SpriteBatch _spriteBatch;
 
@@ -44,6 +45,9 @@ public class Game1 : Game
         
         _player = new Player(_services);
         _services.AddService<Player>(_player);
+        
+        _map = new Map.Map(_services);
+        _services.AddService<Map.Map>(_map);
 
         // TODO: use this.Content to load your game content here
     }
@@ -65,6 +69,7 @@ public class Game1 : Game
 
         // TODO: Add your drawing code here
         _player.Draw();
+        _map.Draw();
 
         base.Draw(gameTime);
     }

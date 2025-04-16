@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,12 +11,13 @@ public class Player
 {
     private GameServiceContainer _services;
     private Position _position;
-    private float _gravity = 500f;
     private Size _size;
+    
+    private float _gravity = 500f;
+    private float _velocityY = 0f; 
+    private float _jumpStrength = -500f;
+    private bool _isOnGround = false;
     private float _speed = 250f;
-    private bool _isOnGround;
-    private float _jumpPower;
-    private float _maxJumpPower = 900f;
     
     public Player(GameServiceContainer services)
     {
@@ -27,39 +29,26 @@ public class Player
     public void Update(float deltaTime)
     {
         ApplyVerticalMove(deltaTime);
-
         Move(deltaTime);
+        CheckForTileCollision(deltaTime);
         ClampWithinBounds(_position);
-        CheckIfIsOnGround(deltaTime);
+    }
+
+    public void CheckForTileCollision(float deltaTime)
+    {
+        Map.Map map = _services.GetService<Map.Map>();
+        map.ClampPlayer(_position, _size, ref _velocityY, ref _isOnGround);
     }
 
     public void ApplyVerticalMove(float deltaTime)
     {
-        _position.Add(new Position(0, (_gravity + _jumpPower) * deltaTime));
-        _jumpPower += _maxJumpPower * deltaTime;
-        _jumpPower = Math.Min(0, _jumpPower);
-    }
-
-    public void CheckIfIsOnGround(float deltaTime)
-    {
-        Position position1 = _position.Copy();
-        Position position2 = _position.Copy();
-        
-        position2.Add(new Position(0, _gravity * deltaTime));
-        ClampWithinBounds(position2);
-        
-        if (position1.IsSame(position2))
-        {
-            _isOnGround = true;
-        }
-        else
-        {
-            _isOnGround = false;
-        }
+        _velocityY += _gravity * deltaTime;
+        _position.Add(new Position(0, _velocityY * deltaTime));
     }
 
     public void Move(float deltaTime)
     {
+
         if (Keyboard.GetState().IsKeyDown(Keys.A))
         {
             _position.Add(new Position(-_speed * deltaTime, 0));
@@ -68,14 +57,15 @@ public class Player
         {
             _position.Add(new Position(_speed * deltaTime, 0));
         }
-
+        
         if (Keyboard.GetState().IsKeyDown(Keys.W) || Keyboard.GetState().IsKeyDown(Keys.Space))
         {
             if (_isOnGround)
             {
-                _jumpPower = -_maxJumpPower;
+                _velocityY = _jumpStrength;
+                _isOnGround = false;
             }
-        } 
+        }
     }
     
     public void Draw()
