@@ -18,16 +18,28 @@ public class Player
     private float _jumpStrength = -500f;
     private bool _isOnGround = false;
     private float _speed = 250f;
+
+    private Animator.Animator _idle;
+    private Animator.Animator _jumping;
+    private Animator.Animator _walkingLeft;
+    private Animator.Animator _walkingRight;
+    private Animator.Animator _currentAnimation;
     
     public Player(GameServiceContainer services)
     {
         _services = services;
         _position = new Position(0, 2255);
         _size = new Size(64, 64);
+        _idle = new Animator.Animator(_services, new Position(0, 0), 2);
+        _jumping = new Animator.Animator(_services, new Position(0, 32), 1);
+        _walkingRight = new Animator.Animator(_services, new Position(0, 40), 1);
+        _walkingLeft = new Animator.Animator(_services, new Position(0, 48), 1);
+        _currentAnimation = _idle;
     }
 
     public void Update(float deltaTime)
     {
+        _currentAnimation.Update(deltaTime);
         ApplyVerticalMove(deltaTime);
         Move(deltaTime);
         CheckForTileCollision(deltaTime);
@@ -47,14 +59,35 @@ public class Player
 
     public void Move(float deltaTime)
     {
-
+        int moved = 0;
+        
         if (Keyboard.GetState().IsKeyDown(Keys.A))
         {
+            moved -= 1;
             _position.Add(new Position(-_speed * deltaTime, 0));
         }
         if (Keyboard.GetState().IsKeyDown(Keys.D))
         {
+            moved += 1;
             _position.Add(new Position(_speed * deltaTime, 0));
+        }
+
+        if (moved == 1)
+        {
+            _currentAnimation = _walkingRight;
+        }
+        else if (moved == -1)
+        {
+            _currentAnimation = _walkingLeft;
+        }
+        else
+        {
+            _currentAnimation = _idle;
+        }
+
+        if (!_isOnGround)
+        {
+            _currentAnimation = _jumping;
         }
         
         if (Keyboard.GetState().IsKeyDown(Keys.W) || Keyboard.GetState().IsKeyDown(Keys.Space))
@@ -69,15 +102,12 @@ public class Player
     
     public void Draw()
     {
-        Texture2D spriteSheet = _services.GetService<Texture2D>();
-        Rectangle rect = new Rectangle(0, 0, 8, 8);
-        
         SpriteBatch spriteBatch = _services.GetService<SpriteBatch>();
         
         Camera.Camera camera = _services.GetService<Camera.Camera>();
         
-        spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-        spriteBatch.Draw(spriteSheet, _position.Copy().Add(camera.GetPosition()).ToVector2(), rect, Color.White, 0f, Vector2.Zero, _size.GetWidth()/8f, SpriteEffects.None, 0f);
+        spriteBatch.Begin();
+        spriteBatch.Draw(_currentAnimation.GetCurrentTexture(), _position.Copy().Add(camera.GetPosition()).ToVector2(), Color.White);
         spriteBatch.End();
     }
 
