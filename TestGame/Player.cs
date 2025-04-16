@@ -1,7 +1,7 @@
 using System;
-using System.Windows.Forms.VisualStyles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace TestGame;
 
@@ -11,6 +11,7 @@ public class Player
     private Position _position;
     private float gravity = 500f;
     private Size _size;
+    private float _speed = 250f;
     
     public Player(GameServiceContainer services)
     {
@@ -21,8 +22,26 @@ public class Player
 
     public void Update(float deltaTime)
     {
-        _position.Add(new Position(0, gravity * deltaTime));
+        ApplyGravity(deltaTime);
+        Move(deltaTime);
         ClampWithinBounds();
+    }
+
+    public void ApplyGravity(float deltaTime)
+    {
+        _position.Add(new Position(0, gravity * deltaTime));
+    }
+
+    public void Move(float deltaTime)
+    {
+        if (Keyboard.GetState().IsKeyDown(Keys.A))
+        {
+            _position.Add(new Position(-_speed * deltaTime, 0));
+        }
+        if (Keyboard.GetState().IsKeyDown(Keys.D))
+        {
+            _position.Add(new Position(_speed * deltaTime, 0));
+        }
     }
     
     public void Draw()
